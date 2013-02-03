@@ -40,10 +40,11 @@ namespace ConsoleApplication1
             System.Console.WriteLine("Plays Found: " + plays.Count);
             plays = plays.FindAll(play => play.hasWinner);
             System.Console.WriteLine("Plays Found with winner: " + plays.Count);
-            for (int i = 0; i < 7; i++)
+            for (int i = 0; i < 10; i++)
 			{
                 System.Console.WriteLine("Plays with winner and exactly" + i + " Players: " + plays.FindAll(play => play.players.Count == i).Count);
 			}
+            System.Console.WriteLine("Plays with winner and more than 9 Players: " + plays.FindAll(play => play.players.Count == 9).Count);
         }
     }
 }
