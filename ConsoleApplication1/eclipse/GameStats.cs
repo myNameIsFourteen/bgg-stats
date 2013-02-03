@@ -12,6 +12,7 @@ namespace eclipse
         public static string expansionID = "125898";
         private System.Xml.XmlNode node;
         private bool _hasWinner = false;
+        private bool _hasColorData = false;
 
 
         public EclipsePlay(System.Xml.XmlNode node)
@@ -29,12 +30,17 @@ namespace eclipse
                 {
                     _hasWinner = true;
                 }
+                if (!player.color.Equals(""))
+                {
+                    _hasColorData = true;
+                }
             }
         }
 
         public List<EclipsePlayer> players { get; set; }
         public int duration { get; set; }
         public bool hasWinner { get { return _hasWinner; } }
+        public bool hasColors { get { return _hasColorData; } }
 
         public static List<EclipsePlay> getAllPlayStats()
         {

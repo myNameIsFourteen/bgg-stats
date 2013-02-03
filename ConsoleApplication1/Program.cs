@@ -15,14 +15,29 @@ namespace ConsoleApplication1
 
             writePlayerCountStats(plays);
 
-            write4PlayerGameDetails(plays);
+            writeNPlayerGameDetails(plays, 4);
+
+            writeUnknownRaces();
         }
 
-        private static void write4PlayerGameDetails(List<eclipse.EclipsePlay> plays)
+        private static void writeUnknownRaces()
         {
-            int pCount = 4;
+            System.IO.StreamWriter writer = new System.IO.StreamWriter("UnknownRaces.txt");
+
+            foreach (String str in eclipse.EclipseRaceParser.unknownRaces)
+            {
+                writer.WriteLine('"' + str + "\",");
+            }
+
+            writer.Close();
+        }
+
+        private static void writeNPlayerGameDetails(List<eclipse.EclipsePlay> plays, int pCount)
+        {
+            plays = plays.FindAll(play => play.hasWinner);
             plays = plays.FindAll(play => play.players.Count == pCount);
-            System.IO.StreamWriter writer = new System.IO.StreamWriter("4playerPlays.csv");
+            plays = plays.FindAll(play => play.hasColors);
+            System.IO.StreamWriter writer = new System.IO.StreamWriter(pCount + "playerPlays.csv");
             String outputLine = "GameID";
             for (int i = 0; i < 4; i++)
             {
@@ -35,7 +50,7 @@ namespace ConsoleApplication1
                 outputLine = play.playID();
                 foreach (eclipse.EclipsePlayer player in play.players)
                 {
-                    outputLine += ", " + player.raceStr + ", " + player.score + ", " + player.win;
+                    outputLine += ", " + player.race + ", " + player.color + ", " + player.win;
                 }
                 writer.WriteLine(outputLine);
             }
