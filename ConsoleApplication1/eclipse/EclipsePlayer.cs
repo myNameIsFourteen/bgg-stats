@@ -12,13 +12,14 @@ namespace eclipse
         public EclipseRace race { get; set; }
         public String raceStr { get; set; }
         public bool win { get; set; }
-        public int score { get; set; }
+        public String score { get; set; }
 
         public EclipsePlayer(System.Xml.XmlNode playerNode)
         {
             this.playerNode = playerNode;
             raceStr = playerNode.Attributes["color"].InnerText;
             win = int.Parse(playerNode.Attributes["win"].InnerText) > 0;
+            score = playerNode.Attributes["score"].InnerText;
         }
     }
 }
