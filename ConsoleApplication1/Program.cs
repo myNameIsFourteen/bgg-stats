@@ -15,7 +15,12 @@ namespace ConsoleApplication1
 
             writePlayerCountStats(plays);
 
-            writeNPlayerGameDetails(plays, 4);
+            for (int i = 1; i < 10; i++)
+            {
+                writeNPlayerGameDetails(plays, i);
+            }
+
+            writeWinnerDetails(plays);
 
             writeUnknownRaces();
         }
@@ -38,21 +43,35 @@ namespace ConsoleApplication1
             plays = plays.FindAll(play => play.players.Count == pCount);
             plays = plays.FindAll(play => play.hasColors);
             System.IO.StreamWriter writer = new System.IO.StreamWriter(pCount + "playerPlays.csv");
-            String outputLine = "GameID";
-            for (int i = 0; i < 4; i++)
-            {
-                outputLine = outputLine + ", playerRace, playerScore , playerWin?";
-            }
+            String outputLine = "GameID, playerRace, playerWin?";
             writer.WriteLine(outputLine);
 
             foreach (eclipse.EclipsePlay play in plays)
             {
-                outputLine = play.playID();
                 foreach (eclipse.EclipsePlayer player in play.players)
                 {
-                    outputLine += ", " + player.race + ", " + player.color + ", " + player.win;
+                    outputLine = play.playID() + ", " + player.race + ", " + player.win;
+                    writer.WriteLine(outputLine);
                 }
-                writer.WriteLine(outputLine);
+            }
+            writer.Close();
+        }
+
+        private static void writeWinnerDetails(List<eclipse.EclipsePlay> plays)
+        {
+            plays = plays.FindAll(play => play.hasWinner);
+            plays = plays.FindAll(play => play.hasColors);
+            System.IO.StreamWriter writer = new System.IO.StreamWriter("winners.csv");
+            String outputLine = "GameID, playerCount, playerRace, playerWin?";
+            writer.WriteLine(outputLine);
+
+            foreach (eclipse.EclipsePlay play in plays)
+            {
+                foreach (eclipse.EclipsePlayer player in play.players)
+                {
+                    outputLine = play.playID() + ", " + play.players.Count + ", " + player.race + ", " + player.win;
+                    writer.WriteLine(outputLine);
+                }
             }
             writer.Close();
         }
