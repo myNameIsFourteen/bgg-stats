@@ -12,7 +12,7 @@ namespace eclipse
         public static string expansionID = "125898";
         private System.Xml.XmlNode node;
         private bool _hasWinner = false;
-        private bool _hasColorData = false;
+        private bool _hasColorData = true;
 
 
         public EclipsePlay(System.Xml.XmlNode node)
@@ -30,10 +30,14 @@ namespace eclipse
                 {
                     _hasWinner = true;
                 }
-                if (!player.color.Equals(""))
+                if (player.race == eclipse.EclipseRace.Unknown)
                 {
-                    _hasColorData = true;
+                    _hasColorData = false;
                 }
+            }
+            if (!hasWinner)
+            {
+                _hasColorData = false;
             }
         }
 

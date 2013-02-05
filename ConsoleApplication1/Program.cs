@@ -22,7 +22,69 @@ namespace ConsoleApplication1
 
             writeWinnerDetails(plays);
 
+            writeAssortedStats(plays, "percents.csv");
+
             writeUnknownRaces();
+        }
+
+        private static void writeAssortedStats(List<eclipse.EclipsePlay> plays, String fileName)
+        {
+            Dictionary<int, int> playerCounts = new Dictionary<int, int>();
+            Dictionary<int, Dictionary<eclipse.EclipseRace, int>> winCounts = new Dictionary<int, Dictionary<eclipse.EclipseRace, int>>();
+            Dictionary<int, Dictionary<eclipse.EclipseRace, int>> participationCounts = new Dictionary<int, Dictionary<eclipse.EclipseRace, int>>();
+            System.IO.StreamWriter writer = new System.IO.StreamWriter(fileName + ".txt");
+            writer.WriteLine("Total Plays: " + plays.Count);
+            plays = plays.FindAll(play => play.hasWinner);
+            writer.WriteLine("Plays With Winner: " + plays.Count);
+            plays = plays.FindAll(play => play.hasColors);
+            writer.WriteLine("Plays With Parsed Races: " + plays.Count);
+
+            for (int playerCount = 1; playerCount < 10; playerCount++)
+            {
+                playerCounts[playerCount] = 0;
+                winCounts[playerCount] = new Dictionary<eclipse.EclipseRace, int>();
+                participationCounts[playerCount] = new Dictionary<eclipse.EclipseRace, int>();
+                foreach (eclipse.EclipseRace race in Enum.GetValues(typeof(eclipse.EclipseRace)))
+                {
+                    winCounts[playerCount][race] = 0;
+                    participationCounts[playerCount][race] = 0;
+                }
+            }
+
+            foreach (eclipse.EclipsePlay play in plays)
+            {
+                int playerCount = play.players.Count;
+                playerCounts[playerCount] += 1;
+                foreach (eclipse.EclipsePlayer player in play.players)
+                {
+                    participationCounts[playerCount][player.race] += 1;
+                    if (player.win)
+                    {
+                        winCounts[playerCount][player.race] += 1;
+                    }
+                }
+            }
+
+            for (int playerCount = 1; playerCount < 10; playerCount++)
+            {
+                String header = "Statsfor " + playerCount + " player games";
+                String participation = "Participates in: " + playerCounts[playerCount] + " games";
+                String weightedWins = "%Wins out of " + playerCounts[playerCount] * playerCount +  " participations" ;
+                String overallWins = "%Wins out of " + playerCounts[playerCount] + " games";
+                foreach (eclipse.EclipseRace race in Enum.GetValues(typeof(eclipse.EclipseRace)))
+                {
+                    header += ", " + race;
+                    participation += ", " + Math.Round(100 * participationCounts[playerCount][race] / (double)playerCounts[playerCount], 2);
+                    weightedWins += ", " + Math.Round(100 * winCounts[playerCount][race] / (double)participationCounts[playerCount][race], 2);
+                    overallWins += ", " + Math.Round(100 * winCounts[playerCount][race] / (double)playerCounts[playerCount], 2);
+                }
+
+                writer.WriteLine(header);
+                writer.WriteLine(participation);
+                writer.WriteLine(weightedWins);
+                writer.WriteLine(overallWins);
+            }
+            writer.Close();
         }
 
         private static void writeUnknownRaces()
