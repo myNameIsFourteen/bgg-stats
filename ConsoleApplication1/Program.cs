@@ -22,7 +22,10 @@ namespace ConsoleApplication1
 
             writeWinnerDetails(plays);
 
-            writeAssortedStats(plays, "percents.csv");
+            writeAssortedStats(plays, "Overall.csv");
+            writeAssortedStats(plays.FindAll(play => !play.isAllTerran), "RemoveAllTerran.csv");
+            writeAssortedStats(plays.FindAll(play => !play.isAllTerran && !play.isExpansion), "BaseLessAllTerran.csv");
+            writeAssortedStats(plays.FindAll(play => !play.isAllTerran && play.isExpansion), "ExpansionLessAllTerran.csv");
 
             writeUnknownRaces();
         }
@@ -32,9 +35,9 @@ namespace ConsoleApplication1
             Dictionary<int, int> playerCounts = new Dictionary<int, int>();
             Dictionary<int, Dictionary<eclipse.EclipseRace, int>> winCounts = new Dictionary<int, Dictionary<eclipse.EclipseRace, int>>();
             Dictionary<int, Dictionary<eclipse.EclipseRace, int>> participationCounts = new Dictionary<int, Dictionary<eclipse.EclipseRace, int>>();
-            System.IO.StreamWriter writer = new System.IO.StreamWriter(fileName + ".txt");
+            System.IO.StreamWriter writer = new System.IO.StreamWriter(fileName);
             writer.WriteLine("Total Plays: " + plays.Count);
-            plays = plays.FindAll(play => play.hasWinner);
+            plays = plays.FindAll(play => play.hasOneWinner);
             writer.WriteLine("Plays With Winner: " + plays.Count);
             plays = plays.FindAll(play => play.hasColors);
             writer.WriteLine("Plays With Parsed Races: " + plays.Count);
@@ -121,17 +124,17 @@ namespace ConsoleApplication1
 
         private static void writeWinnerDetails(List<eclipse.EclipsePlay> plays)
         {
-            plays = plays.FindAll(play => play.hasWinner);
+            plays = plays.FindAll(play => play.hasOneWinner && !play.isAllTerran);
             plays = plays.FindAll(play => play.hasColors);
             System.IO.StreamWriter writer = new System.IO.StreamWriter("winners.csv");
-            String outputLine = "GameID, playerCount, playerRace, playerWin?";
+            String outputLine = "GameID, Expansion,  playerCount, playerRace, playerWin?";
             writer.WriteLine(outputLine);
 
             foreach (eclipse.EclipsePlay play in plays)
             {
                 foreach (eclipse.EclipsePlayer player in play.players)
                 {
-                    outputLine = play.playID() + ", " + play.players.Count + ", " + player.race + ", " + player.win;
+                    outputLine = play.playID() + ", " + play.isExpansion + ", " + play.players.Count + ", " + player.race + ", " + player.win;
                     writer.WriteLine(outputLine);
                 }
             }
@@ -140,6 +143,14 @@ namespace ConsoleApplication1
 
         private static void writePlayerCountStats(List<eclipse.EclipsePlay> plays)
         {
+            System.Console.WriteLine("Base game Plays: " + plays.FindAll(play => !play.isExpansion).Count);
+            System.Console.WriteLine("Base game Plays with one winner: " + plays.FindAll(play => !play.isExpansion && play.hasColors && play.hasOneWinner).Count);
+            System.Console.WriteLine("Base game Plays all terran: " + plays.FindAll(play => !play.isExpansion && play.hasColors && play.hasOneWinner && play.isAllTerran).Count);
+
+            System.Console.WriteLine("Expansion Plays: " + plays.FindAll(play => play.isExpansion).Count);
+            System.Console.WriteLine("Expansion Plays with one winner: " + plays.FindAll(play => play.isExpansion && play.hasColors && play.hasOneWinner).Count);
+            System.Console.WriteLine("Expansion Plays all terran: " + plays.FindAll(play => play.isExpansion && play.hasColors && play.hasOneWinner && play.isAllTerran).Count);
+
             System.Console.WriteLine("Plays Found: " + plays.Count);
             plays = plays.FindAll(play => play.hasWinner);
             System.Console.WriteLine("Plays Found with a winner: " + plays.Count);
@@ -148,6 +159,7 @@ namespace ConsoleApplication1
                 System.Console.WriteLine("Plays with a winner and exactly" + i + " Players: " + plays.FindAll(play => play.players.Count == i).Count);
             }
             System.Console.WriteLine("Plays with a winner and more than 9 Players: " + plays.FindAll(play => play.players.Count == 9).Count);
+
         }
     }
 }
