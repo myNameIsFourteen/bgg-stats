@@ -34,8 +34,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BoardGameGeekAPI">
-      <HintPath>..\..\..\Downloads\BoardGameGeekAPI.dll</HintPath>
+    <Reference Include="BoardGameGeekAPI, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\resources\BoardGameGeekAPI.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
